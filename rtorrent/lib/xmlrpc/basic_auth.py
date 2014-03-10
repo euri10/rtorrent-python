@@ -21,13 +21,16 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from base64 import encodestring
+import httplib
 import string
 import xmlrpclib
 
 
 class BasicAuthTransport(xmlrpclib.Transport):
-    def __init__(self, username=None, password=None):
+    def __init__(self, secure=False, username=None, password=None):
         xmlrpclib.Transport.__init__(self)
+
+        self.secure = secure
 
         self.username = username
         self.password = password
@@ -38,6 +41,25 @@ class BasicAuthTransport(xmlrpclib.Transport):
                 encodestring("%s:%s" % (self.username, self.password)),
                 "\012", ""
             ))
+
+    def make_connection(self, host):
+        if self._connection and host == self._connection[0]:
+            return self._connection[1]
+
+        chost, self._extra_headers, x509 = self.get_host_info(host)
+
+        if self.secure:
+            try:
+                self._connection = host, httplib.HTTPSConnection(chost, None, **(x509 or {}))
+            except AttributeError:
+                raise NotImplementedError(
+                    "your version of httplib doesn't support HTTPS"
+                )
+        else:
+            self._connection = host, httplib.HTTPConnection(chost)
+
+        return self._connection[1]
+
 
     def single_request(self, host, handler, request_body, verbose=0):
         # issue XML-RPC request

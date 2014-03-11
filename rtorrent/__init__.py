@@ -90,7 +90,7 @@ class RTorrent:
     def _get_conn(self):
         """Get ServerProxy instance"""
 
-        if self.username is not None and self.password is not None:
+        if self.username and self.password:
             if self.scheme == 'scgi':
                 raise NotImplementedError()
 

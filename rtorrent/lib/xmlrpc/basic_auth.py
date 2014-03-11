@@ -20,9 +20,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from base64 import encodestring
+from base64 import b64encode
 import httplib
-import string
 import xmlrpclib
 
 
@@ -36,11 +35,12 @@ class BasicAuthTransport(xmlrpclib.Transport):
         self.password = password
 
     def send_auth(self, h):
-        if self.username is not None and self.password is not None:
-            h.putheader('AUTHORIZATION', "Basic %s" % string.replace(
-                encodestring("%s:%s" % (self.username, self.password)),
-                "\012", ""
-            ))
+        if not self.username or not self.password:
+            return
+
+        auth = b64encode("%s:%s" % (self.username, self.password))
+
+        h.putheader('Authorization', "Basic %s" % auth)
 
     def make_connection(self, host):
         if self._connection and host == self._connection[0]:

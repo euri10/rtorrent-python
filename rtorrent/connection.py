@@ -6,6 +6,12 @@ from rtorrent.lib.xmlrpc.clients.http import HTTPServerProxy
 from rtorrent.lib.xmlrpc.clients.scgi import SCGIServerProxy
 from rtorrent.lib.xmlrpc.transports.basic_auth import BasicAuthTransport
 
+# Try import requests transport (optional)
+try:
+    from rtorrent.lib.xmlrpc.transports.requests_ import RequestsTransport
+except ImportError:
+    RequestsTransport = None
+
 MIN_RTORRENT_VERSION = (0, 8, 1)
 MIN_RTORRENT_VERSION_STR = convert_version_tuple_to_str(MIN_RTORRENT_VERSION)
 
@@ -79,6 +85,13 @@ class Connection(object):
         secure = self.scheme == 'https'
 
         log.debug('Constructing transport for scheme: %r, authentication method: %r', self.scheme, method)
+
+        # Use requests transport (if available)
+        if RequestsTransport and method in ['basic', 'digest']:
+            return RequestsTransport(
+                secure, self.auth,
+                verify_ssl=self.verify_ssl
+            )
 
         # Use basic authentication transport
         if method == 'basic':

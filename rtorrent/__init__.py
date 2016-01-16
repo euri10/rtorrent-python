@@ -248,7 +248,7 @@ class RTorrent:
             assert view is not None, "view parameter required on non-persistent groups"
             p.group.insert('', name, view)
 
-        self._update_rpc_methods()
+        self.connection._update_rpc_methods()
 
     def get_group(self, name):
         assert name is not None, "group name required"

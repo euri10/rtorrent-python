@@ -19,12 +19,14 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import inspect
+from xmlrpc.client import MultiCall
+
 import rtorrent
 import re
 from rtorrent.common import bool_to_int, convert_version_tuple_to_str,\
     safe_repr
 from rtorrent.err import MethodError
-from rtorrent.compat import xmlrpclib
+
 
 
 def get_varname(rpc_call):
@@ -159,7 +161,7 @@ class Multicall:
         @return: the results (post-processed), in the order they were added
         @rtype: tuple
         """
-        m = xmlrpclib.MultiCall(self.rt_obj._get_conn())
+        m = MultiCall(self.rt_obj._get_conn())
         for call in self.calls:
             method, args = call
             rpc_call = getattr(method, "rpc_call")

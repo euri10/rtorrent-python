@@ -17,10 +17,13 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import urllib
+
 import os.path
 import time
-import xmlrpclib
+from urllib.parse import urlparse
+from xmlrpc.client import Binary
+
+
 
 from rtorrent.common import find_torrent, join_uri, \
     update_uri, is_valid_port, convert_version_tuple_to_str
@@ -53,7 +56,7 @@ class RTorrent:
         self.username = username
         self.password = password
 
-        self.scheme = urllib.splittype(self.uri)[0]
+        self.scheme = urlparse(self.uri)[0]
 
         if sp:
             self.sp = sp
@@ -75,7 +78,7 @@ class RTorrent:
             self._verify_conn()
 
     def _transform_uri(self, uri):
-        scheme = urllib.splittype(uri)[0]
+        scheme = urlparse(uri)[0]
 
         if scheme == 'httprpc' or scheme.startswith('httprpc+'):
             # Try find HTTPRPC transport (token after '+' in 'httprpc+https'), otherwise assume HTTP
@@ -258,7 +261,7 @@ class RTorrent:
         """
         p = self._get_conn()
         tp = TorrentParser(torrent)
-        torrent = xmlrpclib.Binary(tp._raw_torrent)
+        torrent = Binary(tp._raw_torrent)
         info_hash = tp.info_hash
 
         func_name = self._get_load_function("raw", start, verbose)
@@ -322,7 +325,7 @@ class RTorrent:
             torrent = open(torrent, "rb").read()
 
         if file_type in ["raw", "file"]:
-            finput = xmlrpclib.Binary(torrent)
+            finput = Binary(torrent)
         elif file_type == "url":
             finput = torrent
 

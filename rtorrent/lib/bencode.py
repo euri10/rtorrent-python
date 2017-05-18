@@ -38,12 +38,6 @@
 
 import sys
 
-_py3 = sys.version_info[0] == 3
-
-if _py3:
-    _VALID_STRING_TYPES = (str,)
-else:
-    _VALID_STRING_TYPES = (str, unicode)  # @UndefinedVariable
 
 _TYPE_INT = 1
 _TYPE_STRING = 2
@@ -88,10 +82,8 @@ def _decode_string(data):
     end = 1
     # if py3, data[end] is going to be an int
     # if py2, data[end] will be a string
-    if _py3:
-        char = 0x3A
-    else:
-        char = chr(0x3A)
+
+    char = 0x3A
 
     while data[end] != char:  # ':'
         end = end + 1
@@ -111,10 +103,8 @@ def _decode_int(data):
     end = 1
     # if py3, data[end] is going to be an int
     # if py2, data[end] will be a string
-    if _py3:
-        char = 0x65
-    else:
-        char = chr(0x65)
+    char = 0x65
+
 
     while data[end] != char:	 # 'e'
         end = end + 1
@@ -244,7 +234,7 @@ def _encode_dict(data):
     edict = b'd'
     keys = []
     for key in data:
-        if not isinstance(key, _VALID_STRING_TYPES) and not isinstance(key, bytes):
+        if not isinstance(key, str) and not isinstance(key, bytes):
             return False
         keys.append(key)
     keys.sort()
@@ -267,11 +257,11 @@ def _encode_dict(data):
 def encode(data):
     if isinstance(data, bool):
         return False
-    elif isinstance(data, (int, long)):
+    elif isinstance(data, int):
         return _encode_int(data)
     elif isinstance(data, bytes):
         return _encode_string(data)
-    elif isinstance(data, _VALID_STRING_TYPES):
+    elif isinstance(data, str):
         return _encode_string(data.encode())
     elif isinstance(data, list):
         return _encode_list(data)

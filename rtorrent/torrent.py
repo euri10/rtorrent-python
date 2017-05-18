@@ -23,7 +23,7 @@ import rtorrent.rpc
 import rtorrent.peer
 import rtorrent.tracker
 import rtorrent.file
-import rtorrent.compat
+
 
 from rtorrent.common import safe_repr
 

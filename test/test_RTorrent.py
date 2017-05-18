@@ -2,7 +2,7 @@ from time import time
 
 import pytest
 
-from rtorrent import RTorrent
+from rtorrent import RTorrent, Torrent
 
 
 @pytest.fixture
@@ -22,3 +22,7 @@ def test_RTorrent(socketpath):
     listTorrents = rtorrent.get_torrents()
     t2 = time()
     print(listTorrents,  t2-t1)
+
+def test_Torrent(socketpath):
+    rtorrent = RTorrent(socketpath)
+    t = Torrent(rtorrent,info_hash="42B7EFAB0D48757C6D7906272733BD22B57BB182")

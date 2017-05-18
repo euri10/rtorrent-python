@@ -46,7 +46,8 @@ class Torrent:
         self.peers = []
         self.trackers = []
         self.files = []
-
+        self.hashing = None
+        self.state = None
         self._call_custom_methods()
 
     def __repr__(self):
